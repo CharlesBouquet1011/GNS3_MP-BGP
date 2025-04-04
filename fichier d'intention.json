@@ -58,7 +58,6 @@
 		"protocole": "OSPF",
 		"annonce_reseaux":["R11"],
 		"PE":[],
-		"CE":[],
 		"plage_IP":"2.0.0.0/16",
 
 		"routeurs": {
@@ -112,7 +111,6 @@
         "protocole":"OSPF",
 		"annonce_reseaux":["R15"],
 		"PE":[],
-		"CE":[],
 		"plage_IP":"3.0.0.0/16",
 
         "routeurs":{
@@ -133,7 +131,6 @@
         "protocole":"OSPF",
 		"annonce_reseaux":["R16"],
 		"PE":[],
-		"CE":[],
 		"plage_IP":"4.0.0.0/16",
 
         "routeurs":{
@@ -153,7 +150,6 @@
         "protocole":"OSPF",
 		"annonce_reseaux":["R17"],
 		"PE":[],
-		"CE":[],
 		"plage_IP":"5.0.0.0/16",
 
         "routeurs":{
