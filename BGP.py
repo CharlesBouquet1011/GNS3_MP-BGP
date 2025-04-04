@@ -1,6 +1,7 @@
 import json
 import ipaddress
 from adresses import get_reseaux_routeur
+
 def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
 	"""
 	très similaire à la fonction en dessous mais n'annonce que le réseau mis en paramètre
@@ -30,7 +31,7 @@ def annonce_reseaux_routeur(routeur_sur_lequel_on_applique,commandes,config_noeu
 
 
 
-def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voisin,policy,config_noeuds):
+def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv4,address_voisin,policy,config_noeuds):
 	"""
 	router : string
 	voisin du routeur : string
@@ -41,39 +42,27 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,address_voi
 	"""
 	exi=True
 	AS = get_as_for_router(routeur,reseau_officiel)
-	commandes = [f"router bgp {AS}", "no bgp default ipv4-unicast",f"bgp router-id {router_id}"]
+	commandes = [f"router bgp {AS}", f"bgp router-id {router_id}"]
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
-	# Créer un objet IPv6Network
-	if "/" in address_voisin:
-		ipv6_noprefix = address_voisin[:address_voisin.index("/")] #sans prefixe, ici ça ne fonctionne pas, pas d'attribut ip
-	else:
-		ipv6_noprefix=address_voisin
+
 	memeAs=sameAS(routeur,voisin,reseau_officiel)
-	if  memeAs and "db8" in ipv6_noprefix: #iBGP, on ne veut garder que les adresses loopback
-		commandes.append(f"neighbor {ipv6_noprefix} remote-as {AS}") #en fait c'est l'adresse ipv6 du voisin!!
-		commandes.append(f"address-family ipv6 unicast")
-		commandes.append(f"neighbor {ipv6_noprefix} activate")
+	if  memeAs and "db8" in address_voisin: #iBGP, on ne veut garder que les adresses loopback
+		commandes.append(f"neighbor {address_voisin} remote-as {AS}") #en fait c'est l'adresse ipv4 du voisin!!
+		commandes.append(f"address-family ipv4 unicast")
+		commandes.append(f"neighbor {address_voisin} activate")
 		
 	elif not memeAs: #eBGP
-		commandes.append(f"neighbor {ipv6_noprefix} remote-as {voisin_as}") #change AS
-		commandes.append(f"address-family ipv6 unicast")
-		commandes.append(f"neighbor {ipv6_noprefix} activate")
+		commandes.append(f"neighbor {address_voisin} remote-as {voisin_as}") #change AS
+		commandes.append(f"address-family ipv4 unicast")
+		commandes.append(f"neighbor {address_voisin} activate")
 	else: 
 		exi=False
 		#on ignore, quand ça ne correspond à aucun des cas ci-dessus (on ne veut pas établir iBGP sur les interfaces)
 	
-
-	# Créer un objet IPv6Network
-	network = ipaddress.IPv6Network(address_ipv6, strict=False)
-
-	# Extraire l'adresse IPv6 et le préfixe
-	adresse_reseau = str(network.network_address)
-	prefixe = network.prefixlen
 	if exi:
 		if routeur in reseau_officiel[str(AS)]["annonce_reseaux"]:
 			annonce_reseaux_routeur(routeur,commandes,config_noeuds)
 
-		
 		
 		commandes.append("exit") #problème ici certainement
 		commandes.append("exit")
@@ -107,7 +96,7 @@ def get_as_for_router(routeur, data):
     return None  # Retourne None si le routeur n'est pas trouvé
 
 
-def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds):#ici l'adresse voisin est bien sa @loop_voisin!
+def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv4,adresse_voisin,policy,config_noeuds):#ici l'adresse voisin est bien sa @loop_voisin!
 	"""
 	configure l'iBGP pour les routeurs voisins du même AS
 	voisin: routeur voisin
@@ -119,7 +108,7 @@ def spread_loopback_iBGP(voisin,routeur,reseau_officiel,router_id,address_ipv6,a
 	"""
 	commandes=["conf t"]
 	if sameAS(routeur,voisin,reseau_officiel): #si c'est dans meme AS on spread @loopback
-		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv6,adresse_voisin,policy,config_noeuds))
+		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv4,adresse_voisin,policy,config_noeuds))
 		commandes.append("exit")
 		commandes+=["configure termi",f"router bgp {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} remote-as {get_as_for_router(routeur,reseau_officiel)}",f"neighbor {adresse_voisin} update-source Loopback0","exit","exit"]
 	return commandes
@@ -157,7 +146,7 @@ def get_relation(as_number_to_config, as_number_neighbor, data):
 		if as_number_neighbor in as_list:
 			return type
 
-def policies(routeur, voisin, data, address_ipv6_neighbor):
+def policies(routeur, voisin, data, address_ipv4_neighbor):
 	"""
 	Crée les commandes de policies pour un routeur donné, un routeur voisin donné,
 	data: graphe (fichier d'intention)
@@ -166,19 +155,17 @@ def policies(routeur, voisin, data, address_ipv6_neighbor):
 	""" 
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
-	commandes = [f"router bgp {as_number}", "address-family ipv6 unicast"]
-	if "/" in address_ipv6_neighbor:
-		address_ipv6_neighbor = address_ipv6_neighbor[:address_ipv6_neighbor.index("/")] 
+	commandes = [f"router bgp {as_number}", "address-family ipv4 unicast"]
 	if as_number != as_voisin:
 		relation = get_relation(as_number, as_voisin, data)
 		if relation == 'provider':
-			commandes.append(f"neighbor {address_ipv6_neighbor} route-map PROVIDER in") #pas sûr de mon changement
-			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
+			commandes.append(f"neighbor {address_ipv4_neighbor} route-map PROVIDER in") #pas sûr de mon changement
+			commandes.append(f"neighbor {address_ipv4_neighbor} route-map CUSTOMERS_ONLY out")
 		elif relation == 'peer':
-			commandes.append(f"neighbor {address_ipv6_neighbor} route-map PEER in")
-			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMERS_ONLY out")
+			commandes.append(f"neighbor {address_ipv4_neighbor} route-map PEER in")
+			commandes.append(f"neighbor {address_ipv4_neighbor} route-map CUSTOMERS_ONLY out")
 		else:
-			commandes.append(f"neighbor {address_ipv6_neighbor} route-map CUSTOMER in")
+			commandes.append(f"neighbor {address_ipv4_neighbor} route-map CUSTOMER in")
 
 		commandes.append("exit")
 		commandes.append("exit")
@@ -225,7 +212,7 @@ def test():
 	# 	for routeur in as_data["routeurs"]:
 	# 		as_num = get_as_for_router(routeur, data)
 	# 		print(f"{routeur}: AS {as_num}")
-	print(config_bgp("R4","R8",data,"4.4.4.4","2001:168:192::2/64"))
+	print(config_bgp("R4","R8",data,"4.4.4.4","200.168.90.2"))
 if __name__=="__main__":
 	test()
 
