@@ -1,0 +1,23 @@
+
+{
+	"1": {
+		"routeurs": {
+			"R1": {
+				"FastEthernet0/0": ["R4", 0],
+				"GigabitEthernet1/0": ["R2", 0],
+				"GigabitEthernet2/0": ["R3", 0]
+				
+			},
+			"R2": {
+				"FastEthernet0/0": ["R1", 0],
+				"GigabitEthernet1/0": ["R3", 0],
+				"GigabitEthernet2/0": ["R1", 0]
+			},
+			"R3": {
+				"GigabitEthernet1/0": ["R1", 0],
+				"GigabitEthernet2/0": ["R2", 0],
+				"GigabitEthernet3/0": ["R6", 0]
+			}
+		}
+	}
+}
