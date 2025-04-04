@@ -2,13 +2,13 @@
 	"1": {
 		"protocole": "OSPF",
 		"annonce_reseaux":["R1"],
-		"PE":[],
 		"plage_IP":"1.0.0.0/16",
 		"routeurs": {
-			"R1": {
+            "R1": {
 				"FastEthernet0/0": ["R2", 0],
 				"GigabitEthernet1/0": ["R5", 0],
-                "GigabitEthernet2/0": ["R15", 0]
+                "GigabitEthernet2/0": ["R15", 0],
+                "GigabitEthernet3/0": ["R18", 0, "VPN1"]
                 
 			},
 			"R2": {
@@ -25,7 +25,8 @@
 			"R4": {
 				"FastEthernet0/0": ["R3", 0],
 				"GigabitEthernet1/0": ["R6", 0],
-				"GigabitEthernet2/0": ["R8", 0]
+				"GigabitEthernet2/0": ["R8", 0],
+                "GigabitEthernet3/0": ["R24", 0, "VPN1"]
 			},
 			"R5": {
 				"FastEthernet0/0": ["R1", 0],
@@ -162,6 +163,45 @@
             "peer":["4"],
             "customer":[]
         }   
-    }
+    },
+    "6":{
+        "protocole":"OSPF",
+		"annonce_reseaux":[],
+		"plage_IP":"6.0.0.0/16",
 
+        "routeurs":{
+            "R18":{
+                "FastEthernet0/0":["R1",0],
+                "GigabitEthernet1/0":["R19",0]
+            },
+            "R19":{
+                "FastEthernet0/0":["R18",0]
+            }
+        },
+        "relation":{
+            "provider":["1"],
+            "peer":["7"],
+            "customer":[]
+        }   
+    },
+    "7":{
+        "protocole":"OSPF",
+		"annonce_reseaux":[],
+		"plage_IP":"7.0.0.0/16",
+
+        "routeurs":{
+            "R24":{
+                "FastEthernet0/0":["R4",0],
+                "GigabitEthernet1/0":["R25",0]
+            },
+            "R25":{
+                "FastEthernet0/0":["R24",0]
+            }
+        },
+        "relation":{
+            "provider":["1"],
+            "peer":["6"],
+            "customer":[]
+        }   
+    }
 }
