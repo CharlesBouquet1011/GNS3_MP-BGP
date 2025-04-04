@@ -18,6 +18,7 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
     commands = ["conf t"]
     # Generate the router OSPF configuration commands
     commands.append(f"router ospf {process_id}")
+    commands.append("mpls ldp autoconfig")
     commands.append(f"router-id {router_id}")
     commands.append("exit")
 
