@@ -5,7 +5,7 @@
 		"PE":[],
 		"plage_IP":"1.0.0.0/16",
 		"routeurs": {
-"R1": {
+			"R1": {
 				"FastEthernet0/0": ["R2", 0],
 				"GigabitEthernet1/0": ["R5", 0],
                 "GigabitEthernet2/0": ["R15", 0]
