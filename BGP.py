@@ -1,6 +1,22 @@
 import json
 import ipaddress
-from adresses import get_reseaux_routeur
+#à modifier
+def get_reseaux_routeur(routeur,config_noeuds):
+	"""
+	renvoie les adresses réseaux des réseaux auxquels est connecté un routeur
+	"""
+	liste_reseaux=[]
+	connexions=config_noeuds[routeur]["ip_et_co"].values()
+	#/30 masque 255.255.255.252
+	#0.0.0.3
+	netmask="255.255.255.252"
+	
+	for interface,ip in connexions:
+		ip_interface = ipaddress.IPv4Interface(f'{ip}/{netmask}')
+		network_address = ip_interface.network.network_address
+		liste_reseaux.append(network_address)
+	return liste_reseaux
+
 def annonce_reseau(routeur_iteration,routeur_sur_lequel_on_applique,reseau,commandes):
 	"""
 	très similaire à la fonction en dessous mais n'annonce que le réseau mis en paramètre

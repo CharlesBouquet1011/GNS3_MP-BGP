@@ -1,6 +1,7 @@
 """
 module qui sert à générer les commandes pour ospf sur les routeurs
 """
+from BGP import get_as_for_router
 
 
 def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
@@ -15,9 +16,8 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
         list: liste des commandes pour configurer OSPF sur les routeurs
     """
     commands = ["conf t"]
-    commands.append("ipv6 unicast-routing")
     # Generate the router OSPF configuration commands
-    commands.append(f"ipv6 router ospf {process_id}")
+    commands.append(f"router ospf {process_id}")
     commands.append(f"router-id {router_id}")
     commands.append("exit")
 
@@ -25,7 +25,11 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
     dico_voisins = graphe[numAs]["routeurs"][router_name]
     
     for interface in dico_voisins.keys():
-        
+        voisin=dico_voisins[interface][0]
+        as_voisin=get_as_for_router(voisin)
+        if as_voisin!=numAs:
+            pass #on ne config pas OSPF si le lien est inter AS
+
          #on peut récupérer directement le nom de l'interface dans le dictionnaire
         commands.append(f"interface {interface}")
         commands.append(f"ipv6 ospf {process_id} area 0")
