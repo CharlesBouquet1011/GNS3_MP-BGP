@@ -179,9 +179,9 @@
             }
         },
         "relation":{
-            "provider":["1"],
+            "provider":[],
             "peer":["7"],
-            "customer":[]
+            "customer":["1"]
         }   
     },
     "7":{
@@ -199,9 +199,9 @@
             }
         },
         "relation":{
-            "provider":["1"],
+            "provider":[],
             "peer":["6"],
-            "customer":[]
+            "customer":["1"]
         }   
     }
 }
