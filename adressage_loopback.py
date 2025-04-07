@@ -1,21 +1,25 @@
 import json
 
-# config des @ entre PE & CE avec AS1.AS2.0.0/16
-#10.0.0.0/17 pour les interfaces physiques
-#10.0.128.0/17 pour les interfaces loopback
-
-
-#config des @ loopback avec des /32
-def adressage_loopback(data:dict,AS:str):
-    dic_loop = {}
-    liste_routeur = list(data[AS]["routeurs"].keys())
+def add_loop(id_routeur:int,AS:str):
+    return f"{AS}.0.128.{id_routeur}"
+# def adressage_loopback(data:dict,AS:str):
+#     dic_loop = {}
+#     liste_routeur = list(data[AS]["routeurs"].keys())
     
-    for r in liste_routeur:
+#     for r in liste_routeur:
         
-        id_routeur = r[1:]
-        add_loop = f"{AS}.0.128.{id_routeur}" 
-        dic_loop[r] = add_loop
-    return dic_loop
+#         id_routeur = r[1:]
+#         add_loop = f"{AS}.0.128.{id_routeur}" 
+#         dic_loop[r] = add_loop
+#     return dic_loop
+
+def map_routeurs_to_as(data):
+    routeur_to_as = {}
+    for AS in data:
+        for routeur in data[AS]["routeurs"]:
+            routeur_to_as[routeur] = AS
+    return routeur_to_as
+
 
 def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 	"""
@@ -34,16 +38,18 @@ def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 
 	return commandes
 
-def ajout_commande_config(config_noeud: dict,loopbacks:dict):
-     for routeur in config_noeud.keys():
-        if routeur in loopbacks:
-            config_noeud[routeur]["loopback"]=generer_loopback_commandes(routeur,loopbacks[routeur])
+
+def configure_loopback_addresses(data,config_noeud):
+    routeur_to_as = map_routeurs_to_as(data)
+    
+    for routeur in config_noeud:
+        if routeur in routeur_to_as:
+            AS = routeur_to_as[routeur]
+            adresse_loopback = add_loop(routeur[1:], AS)
+            config_noeud[routeur]["loopback"] = generer_loopback_commandes(routeur, adresse_loopback)
         
-     return config_noeud
-def configure_loopback_addresses(data,config_noeuds):
-    for AS in data.keys():
-        loopbacks =adressage_loopback(data,AS)
-        ajout_commande_config(config_noeuds,loopbacks)
+
+
     
 if __name__ == "__main__":
     config_noeuds = {
@@ -71,9 +77,7 @@ if __name__ == "__main__":
         data  = json.load(file)
     print(config_noeuds)
     
-    for AS in data.keys():
-        loopbacks =adressage_loopback(data,AS)
-        config_noeuds = ajout_commande_config(config_noeuds,loopbacks)
+    configure_loopback_addresses(data,config_noeuds)
     print(config_noeuds)
     
         
