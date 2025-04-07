@@ -38,7 +38,7 @@ def links_out_AS(intent):
     return links
 
 # Traitement de toutes les AS
-print(links_out_AS(intent))
+# print(links_out_AS(intent))
 
 # Résultat de la fonction links_out_AS(intent) avec intent_lite.json
 # [['1', R1', 'FastEthernet0/0', '2', 'R4', 'GigabitEthernet1/0'], ['1', 'R3', 'GigabitEthernet3/0', '2', 'R5', 'FastEthernet0/0']]
