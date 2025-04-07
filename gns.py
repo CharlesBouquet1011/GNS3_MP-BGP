@@ -106,7 +106,7 @@ if __name__=="__main__":
     config_noeuds=ad.attribue_ip(graphe,config_noeuds)
     id.config_router_id(graphe,config_noeuds)
 
-    lb.configure_looback_addresses(config_noeuds)
+    lb.configure_loopback_addresses(config_noeuds)
     telnet.recupérer_jsongns3_routeur(config_noeuds,project)
     with open("config_noeuds.json","w") as outfile:
         json.dump(config_noeuds,outfile,default=handle_non_serializable)
