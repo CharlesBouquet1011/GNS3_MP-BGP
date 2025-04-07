@@ -16,7 +16,7 @@
             
           },
         "commandes":["commande1","commande2","..."],
-        "address_loop":"bl"
+        "loopback":"bl"
     },
     "noeud2":{
 
