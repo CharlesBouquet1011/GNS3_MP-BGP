@@ -18,6 +18,7 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
     commands = ["conf t"]
     # Generate the router OSPF configuration commands
     commands.append(f"router ospf {process_id}")
+    commands.append("mpls ldp autoconfig")
     commands.append(f"router-id {router_id}")
     commands.append("exit")
 
@@ -32,26 +33,18 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
 
          #on peut récupérer directement le nom de l'interface dans le dictionnaire
         commands.append(f"interface {interface}")
-        commands.append(f"ipv6 ospf {process_id} area 0")
+        commands.append(f"ip ospf {process_id} area 0")
         if cost:
-            commands.append(f"ipv6 ospf cost {cost}")
+            commands.append(f"ip ospf cost {cost}")
         commands.append("exit")
-        commands.append(f"interface {interface}")
-        commands.append(f"ipv6 ospf {process_id} area 0")
-        if cost:
-            commands.append(f"ipv6 ospf cost {cost}")
-        commands.append("exit")
+        
     interface="Loopback0" #on configure aussi la loopback pour l'IGP
     commands.append(f"interface {interface}")
-    commands.append(f"ipv6 ospf {process_id} area 0")
+    commands.append(f"ip ospf {process_id} area 0")
     if cost:
-        commands.append(f"ipv6 ospf cost {cost}")
+        commands.append(f"ip ospf cost {cost}")
     commands.append("exit")
-    commands.append(f"interface {interface}")
-    commands.append(f"ipv6 ospf {process_id} area 0")
-    if cost:
-        commands.append(f"ipv6 ospf cost {cost}")
-    commands.append("exit")
+    
     commands.append("exit")
     return commands
 
