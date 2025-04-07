@@ -1,4 +1,4 @@
-from mathis import links_in_AS
+from mathis import links_in_AS, links_out_AS
 
 import json
 with open('fichier_intention.json', 'r') as file:
@@ -40,10 +40,16 @@ def create_subnets(intent_file, as_nb):
     except (IndexError, ValueError):
         return "Invalid format"
 
-def mapping(links, subnet_addresses, config_noeuds):
+def mapping_in(links, subnet_addresses, config_noeuds):
     for i in range (len(links)):
         config_noeuds[links[i][0]]["ip_et_co"][links[i][2]]=[links[i][1], subnet_addresses[i][0]]
         config_noeuds[links[i][2]]["ip_et_co"][links[i][0]]=[links[i][3], subnet_addresses[i][1]]
+    return config_noeuds
+
+def mapping_out(links, subnet_addresses, config_noeuds):
+    for i in range (len(links)):
+        config_noeuds[links[i][1]]["ip_et_co"][links[i][4]]=[links[i][2], subnet_addresses[i][0]]
+        config_noeuds[links[i][4]]["ip_et_co"][links[i][1]]=[links[i][5], subnet_addresses[i][1]]
     return config_noeuds
 
 def genere_commandes_ip(config_noeuds,noeud):
@@ -59,12 +65,14 @@ def genere_commandes_ip(config_noeuds,noeud):
     return commande
 
 if __name__=="__main__":
-    links = links_in_AS.links_in_AS(intent_data["1"]) #Pour l'AS 1
-    print("Links:", links)
-    
+    in_links = links_in_AS.links_in_AS(intent_data["1"]) #Pour l'AS 1
+    out_links = links_out_AS.links_out_AS(intent_data)
     config_noeuds = genere_config_noeud(intent_data)
     subnet = create_subnets(intent_data, "1")
+    min = mapping_in(in_links, subnet, config_noeuds)
+    mout = mapping_out(out_links, subnet, config_noeuds)
+    commande = []
 
-
-    m = mapping(links, subnet, config_noeuds)
-    print("Mapping:", m)
+    for router in intent_data["1"]["routeurs"]:
+        commande.append(genere_commandes_ip(config_noeuds, router))
+    print(commande)
