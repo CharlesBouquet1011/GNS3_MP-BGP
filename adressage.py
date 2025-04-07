@@ -1,5 +1,13 @@
-def create_subnets(network_address, nb_of_links):
+import json
+with open('fichier_intention.json', 'r') as file:
+    intent_data = json.load(file)
+
+def create_subnets(intent_file, as_nb):
     try:
+        network_address = intent_file[as_nb]["plage_IP"]
+        nb_of_links = 0
+        for router in intent_file[as_nb]["routeurs"].values():
+            nb_of_links += len(router)
         octets = (network_address.split('/')[0]).split('.')
         octets[2] = 0
         octets[3] = 0
@@ -58,5 +66,5 @@ config_noeuds = {
         },
     }
 }
-subnet = create_subnets(ip, len(links))
+subnet = create_subnets(intent_data, 1)
 print(genere_commandes_ip(mapping(links, subnet, config_noeuds), "R1"))
