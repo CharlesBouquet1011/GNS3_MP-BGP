@@ -1,8 +1,6 @@
 from mathis import links_in_AS, links_out_AS
 
 import json
-with open('fichier_intention.json', 'r') as file:
-    intent_data = json.load(file)
 
 def genere_config_noeud(intent_file):
     config_noeuds={}
@@ -65,6 +63,9 @@ def genere_commandes_ip(config_noeuds,noeud):
     return commande
 
 if __name__=="__main__":
+    with open('fichier_intention.json', 'r') as file:
+        intent_data = json.load(file)
+
     in_links = links_in_AS.links_in_AS(intent_data["1"]) #Pour l'AS 1
     out_links = links_out_AS.links_out_AS(intent_data)
     config_noeuds = genere_config_noeud(intent_data)
