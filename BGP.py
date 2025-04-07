@@ -40,7 +40,7 @@ def annonce_reseaux_routeur(routeur_sur_lequel_on_applique,commandes,config_noeu
 	
 	reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
 	for reseau in reseaux:
-		commandes.append(f"network {reseau}")
+		commandes.append(f"network {reseau} mask 255.255.255.252")
 
 		
 
