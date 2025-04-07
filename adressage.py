@@ -27,13 +27,14 @@ def create_subnets_and_map_in(intent_file, links, config_noeuds):
             octets[3] = 0
             plage = f"{octets[0]}.{octets[1]}"
             for link in links:
-                config_noeuds[link[0]]["ip_et_co"][link[2]]=[link[1], f"{plage}.{octets[2]}.{octets[3]+1}"]
-                config_noeuds[link[2]]["ip_et_co"][link[0]]=[link[3], f"{plage}.{octets[2]}.{octets[3]+2}"]
-                if octets[3] < 249:
-                    octets[3] += 4
-                else:
-                    octets[2] += 1
-                    octets[3] = 0
+                if link[0] in intent_file[as_nb]["routeurs"]: #Le routeur est dans l'AS
+                    config_noeuds[link[0]]["ip_et_co"][link[2]]=[link[1], f"{plage}.{octets[2]}.{octets[3]+1}"]
+                    config_noeuds[link[2]]["ip_et_co"][link[0]]=[link[3], f"{plage}.{octets[2]}.{octets[3]+2}"]
+                    if octets[3] < 249:
+                        octets[3] += 4
+                    else:
+                        octets[2] += 1
+                        octets[3] = 0
         return config_noeuds
     except (IndexError, ValueError):
         return "Invalid format"
