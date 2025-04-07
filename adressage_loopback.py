@@ -40,8 +40,13 @@ def ajout_commande_config(config_noeud: dict,loopbacks:dict):
             config_noeud[routeur]["loopback"]=generer_loopback_commandes(routeur,loopbacks[routeur])
         
      return config_noeud
-     
-config_noeuds = {
+def configure_loopback_addresses(data,config_noeuds):
+    for AS in data.keys():
+        loopbacks =adressage_loopback(data,AS)
+        ajout_commande_config(config_noeuds,loopbacks)
+    
+if __name__ == "__main__":
+    config_noeuds = {
     "R1": {
         "ip_et_co": {
             "R2": [],
@@ -62,7 +67,6 @@ config_noeuds = {
         },
     }
 }
-if __name__ == "__main__":
     with open('fichier_intention.json','r') as file:
         data  = json.load(file)
     print(config_noeuds)

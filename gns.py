@@ -79,10 +79,12 @@ if __name__=="__main__":
     from gns3fy import Gns3Connector, Project
 
     import adressage as ad
+    import adressage as ad
     import BGP as bgp
     import router_id as id
     import ospf
     import telnet
+    import adressage_loopback as lb
     import adressage_loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
     policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
@@ -107,7 +109,7 @@ if __name__=="__main__":
     config_noeuds = ad.genere_config_noeud(graphe)
     id.config_router_id(graphe,config_noeuds)
 
-    lb.configure_looback_addresses(config_noeuds)
+    lb.configure_loopback_addresses(config_noeuds)
     telnet.recupérer_jsongns3_routeur(config_noeuds,project)
     with open("config_noeuds.json","w") as outfile:
         json.dump(config_noeuds,outfile,default=handle_non_serializable)

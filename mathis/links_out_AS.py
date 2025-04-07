@@ -1,8 +1,5 @@
 import json
 
-with open('./mathis/intent_lite.json', 'r') as JSON:
-    intent = json.load(JSON)
-
 def links_out_AS(intent):
     links = []
     AS_by_router = {}
@@ -36,6 +33,11 @@ def links_out_AS(intent):
                                 processed.add(key)
                             break
     return links
+
+
+if __name__=="__main__":
+    with open('fichier_intention.json', 'r') as file:
+        intent_data = json.load(file)
 
 # Traitement de toutes les AS
 # print(links_out_AS(intent))

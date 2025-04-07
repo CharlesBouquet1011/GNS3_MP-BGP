@@ -1,8 +1,8 @@
 from BGP import get_as_for_router
 import json
+from MP_BGP import routeur_est_PE,getInterfacesClient
 
-
-def config_vrf(router_id,voisin_id,data,nom_client):
+def config_vrf(router_id,voisin_id,data,nom_client): #router id est le nom du routeur
     as_self=get_as_for_router(router_id,data)
     as_neighbour=get_as_for_router(voisin_id,data)
     commands = ["conf t"]
@@ -18,6 +18,7 @@ def config_vrf(router_id,voisin_id,data,nom_client):
     commands.append(f"route-target import {as_self}:{nom_client[3:]}")
     commands.append("address-family ipv4")
     commands.append("exit-address-family")
+    commands.append("end")
     return(commands)
 
 def config_vrf_interface(interface,nom_client):
@@ -28,8 +29,19 @@ def config_vrf_interface(interface,nom_client):
     commands = ["conf t"]
     commands.append(f"interface {interface}")
     commands.append(f"vrf forwarding {nom_client}")
+    commands.append("end")
     return(commands)
 
+
+def config_vrf_routeur(routeur,AS,data):
+    if routeur_est_PE(routeur,AS,data):
+    
+
+        for client,CE,interface in getInterfacesClient(routeur,AS,data):
+            config_vrf(routeur,CE,data,client)
+            config_vrf_interface(interface,client)
+
+         
 
 def test():
     with open("fichier_intention.json") as fichier:

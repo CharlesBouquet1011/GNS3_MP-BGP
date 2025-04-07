@@ -87,3 +87,9 @@ def trouve_PE_AS(numAs,data):
             liste.append(routeur)
     
 
+def config_vrf_et_MP_BGP_routeur(routeur,AS,data,config):
+    from vrf import config_vrf_routeur
+    commandes=[]
+    commandes+=config_vrf_routeur(routeur,AS,data)
+    commandes+=configMp_BGP_routeur(routeur,AS,data,config)
+    return commandes
