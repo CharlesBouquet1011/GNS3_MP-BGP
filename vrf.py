@@ -1,4 +1,5 @@
 from BGP import get_as_for_router
+import json
 
 
 def config_vrf(router_id,voisin_id,data,nom_client):
@@ -17,6 +18,7 @@ def config_vrf(router_id,voisin_id,data,nom_client):
     commands.append(f"route-target import {as_self}:{nom_client[3:]}")
     commands.append("address-family ipv4")
     commands.append("exit-address-family")
+    return(commands)
 
 def config_vrf_interface(interface,nom_client):
     '''
@@ -25,4 +27,15 @@ def config_vrf_interface(interface,nom_client):
     '''
     commands = ["conf t"]
     commands.append(f"interface {interface}")
-    commands.append(f"vrf definition {nom_client}")
+    commands.append(f"vrf forwarding {nom_client}")
+    return(commands)
+
+
+def test():
+    with open("fichier_intention.json") as fichier:
+        data=json.load(fichier)
+    print(config_vrf("R1","R2",data,"VPN1"))
+    print(config_vrf_interface("GigabitEthernet 1/0","VPN1"))
+
+if __name__=="__main__":
+	test()

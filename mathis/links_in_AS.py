@@ -12,7 +12,7 @@ def links_in_AS(AS):
         for intf_src, info_src in interfaces.items():
             router_dest, metric_src = info_src[0], info_src[1]
             if router_dest in routers: # Liens internes (destination dans la même AS)
-                key = tuple(sorted([router_src, router_dest])) # Clé unique pour la paire (sans tenir compte de l'ordre)
+                key = tuple(sorted([router_src, router_dest])) # Clé unique du lien pour éviter les doublons (sans tenir compte de l'ordre)
                 if key not in processed:
                     # Recherche de l'interface sur le routeur destination qui pointe vers src
                     intf_dest, metric_dest = None, None
@@ -34,6 +34,6 @@ def links_in_AS(AS):
 #for AS_number, AS_data in intent.items():
     #print("AS", AS_number, links_in_AS(AS_data))
 
-# Résultat fonction
+# Résultat de la fonction links_in_AS(AS) avec intent_lite.json
 # AS 1 [['R1', 'GigabitEthernet1/0', 'R2', 'FastEthernet0/0', 10], ['R1', 'GigabitEthernet2/0', 'R3', 'GigabitEthernet1/0', 0], ['R2', 'GigabitEthernet1/0', 'R3', 'GigabitEthernet2/0', 0]]
 # AS 2 [['R4', 'FastEthernet0/0', 'R5', 'GigabitEthernet1/0', 0], ['R4', 'GigabitEthernet2/0', 'R6', 'GigabitEthernet2/0', 0], ['R5', 'GigabitEthernet2/0', 'R6', 'GigabitEthernet1/0', 0]]
