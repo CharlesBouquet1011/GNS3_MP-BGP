@@ -4,7 +4,7 @@
 		"routeurs": {
 			"R1": {
 				"FastEthernet0/0": ["R4", 0],
-				"GigabitEthernet1/0": ["R2", 0],
+				"GigabitEthernet1/0": ["R2", 10],
 				"GigabitEthernet2/0": ["R3", 0]
 				
 			},
