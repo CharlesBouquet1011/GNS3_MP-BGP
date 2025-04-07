@@ -1,5 +1,5 @@
 import json
-import ipaddress
+
 # config des @ entre PE & CE avec AS1.AS2.0.0/16
 #10.0.0.0/17 pour les interfaces physiques
 #10.0.128.0/17 pour les interfaces loopback
@@ -7,37 +7,69 @@ import ipaddress
 
 #config des @ loopback avec des /32
 def adressage_loopback(data:dict,AS:str):
-    liste_loop = []
+    dic_loop = {}
     liste_routeur = list(data[AS]["routeurs"].keys())
     
-    for index_routeur in range(len(liste_routeur)):
+    for r in liste_routeur:
         
-        id_routeur = liste_routeur[index_routeur][1:]
-        add_loop = f"10.0.128.{id_routeur}" 
-        liste_loop.append((id_routeur,add_loop))
-    return liste_loop
+        id_routeur = r[1:]
+        add_loop = f"{AS}.0.128.{id_routeur}" 
+        dic_loop[r] = add_loop
+    return dic_loop
 
-def generer_loopback_commandes(routeur,config_noeuds):
+def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 	"""
 	génère les commandes loopback à appliquer au routeur donné en entrée à l'aide du dictionnaire de config
 	"""
 	commandes = []
-	adresse_loopback = config_noeuds[routeur]["loopback"]
-	config_noeuds[routeur]["loopback"]=adresse_loopback
+	
 	commandes.extend([
                      "conf t",
 					f"interface loopback0",
 					
 					f" ip address {adresse_loopback} 255.255.128.0",
 					f"no shutdown",
-					"exit",])
+					"exit","end"])
 	
-	commandes.append("end")
+
 	return commandes
 
-# if __name__ == "__main__":
-#     with open('fichier_intention.json','r') as file:
-#         data  = json.load(file)
-#     for AS in data.keys():
-#         print(adressage_loopback(data,AS))
+def ajout_commande_config(config_noeud: dict,loopbacks:dict):
+     for routeur in config_noeud.keys():
+        if routeur in loopbacks:
+            config_noeud[routeur]["loopback"]=generer_loopback_commandes(routeur,loopbacks[routeur])
+        
+     return config_noeud
+     
+config_noeuds = {
+    "R1": {
+        "ip_et_co": {
+            "R2": [],
+            "R3": []
+        },
+
+    },
+    "R2": {
+        "ip_et_co": {
+        "R1": [],
+        "R3": []
+        },
+    },
+    "R3": {
+        "ip_et_co": {
+        "R1": [],
+        "R2": []
+        },
+    }
+}
+if __name__ == "__main__":
+    with open('fichier_intention.json','r') as file:
+        data  = json.load(file)
+    print(config_noeuds)
+    
+    for AS in data.keys():
+        loopbacks =adressage_loopback(data,AS)
+        config_noeuds = ajout_commande_config(config_noeuds,loopbacks)
+    print(config_noeuds)
+    
         
