@@ -46,7 +46,7 @@ def configure_loopback_addresses(data,config_noeud):
         if routeur in routeur_to_as:
             AS = routeur_to_as[routeur]
             adresse_loopback = add_loop(routeur[1:], AS)
-            config_noeud[routeur]["loopback"] = generer_loopback_commandes(routeur, adresse_loopback)
+            config_noeud[routeur]["loopback"] = adresse_loopback
         
 
 
