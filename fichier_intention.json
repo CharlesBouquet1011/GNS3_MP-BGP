@@ -166,7 +166,7 @@
     },
     "6":{
         "protocole":"OSPF",
-		"annonce_reseaux":[],
+		"annonce_reseaux":["R19"],
 		"plage_IP":"6.0.0.0/16",
 
         "routeurs":{
@@ -186,7 +186,7 @@
     },
     "7":{
         "protocole":"OSPF",
-		"annonce_reseaux":[],
+		"annonce_reseaux":["R25"],
 		"plage_IP":"7.0.0.0/16",
 
         "routeurs":{

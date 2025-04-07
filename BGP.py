@@ -61,7 +61,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv4,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 
 	memeAs=sameAS(routeur,voisin,reseau_officiel)
-	if  memeAs and "db8" in address_voisin: #iBGP, on ne veut garder que les adresses loopback
+	if  memeAs: #iBGP, on ne veut garder que les adresses loopback
 		commandes.append(f"neighbor {address_voisin} remote-as {AS}") #en fait c'est l'adresse ipv4 du voisin!!
 		commandes.append(f"address-family ipv4 unicast")
 		commandes.append(f"neighbor {address_voisin} activate")
