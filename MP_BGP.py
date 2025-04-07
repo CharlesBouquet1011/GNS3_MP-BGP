@@ -58,6 +58,7 @@ def configMp_BGP_routeur(routeur,AS,data,config):
         #config vpnv4
     commandes.append("address-family vpnv4")
     for PEVoisin in trouve_PE_AS(AS,data):
+        if PEVoisin==routeur: continue
         loopbackVoisin=getIpLoopback(PEVoisin,config)
         commandes.append(f"neighbor {loopbackVoisin} activate")
         commandes.append(f"neighbor {loopbackVoisin} send-community extended")
@@ -70,7 +71,7 @@ def configMp_BGP_routeur(routeur,AS,data,config):
         asVoisin=get_as_for_router(CE,data)
         commandes.append(f"neighbor {ipvoisin} remote-as {asVoisin}")
         commandes.append(f"neighbor {ipvoisin} activate")
-        commandes.append('exit-adress-family')
+        commandes.append('exit-address-family')
     
 
     commandes.append("end")
