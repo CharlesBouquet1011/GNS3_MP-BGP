@@ -58,13 +58,8 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     commande=ad.genere_commandes_ip(config_noeuds,routeur)
     commande+=lb.generer_loopback_commandes(routeur,config_noeuds)
     #mettre bgp après ospf/rip (il faut avoir configuré le routage ipv6#)
-    if protocole.lower()=="ospf":
-        commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
-    elif protocole.lower()=="rip":
-        commande+=rip.config_rip_routeur(routeur,graphe,numas)
-    else:
-        print("protocole non reconnu")
-        raise
+    commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
+    
     commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds,policy)
     commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas,policy)
 
@@ -82,13 +77,12 @@ if __name__=="__main__":
 
     from gns3fy import Gns3Connector, Project
 
-    import adresses as ad
+    import adressage as ad
     import BGP as bgp
     import router_id as id
-    import RIP as rip
     import ospf
     import telnet
-    import loopback as lb
+    import adressage_loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
     policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
     if policy:
