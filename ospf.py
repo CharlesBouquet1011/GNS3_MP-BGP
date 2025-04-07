@@ -27,7 +27,7 @@ def config_ospf(router_id,router_name, process_id, graphe,numAs, cost=0):
     
     for interface in dico_voisins.keys():
         voisin=dico_voisins[interface][0]
-        as_voisin=get_as_for_router(voisin)
+        as_voisin=get_as_for_router(voisin,graphe)
         if as_voisin!=numAs:
             pass #on ne config pas OSPF si le lien est inter AS
 

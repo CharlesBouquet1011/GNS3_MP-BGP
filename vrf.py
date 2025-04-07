@@ -34,14 +34,15 @@ def config_vrf_interface(interface,nom_client):
 
 
 def config_vrf_routeur(routeur,AS,data):
+    commandes=[]
     if routeur_est_PE(routeur,AS,data):
     
 
         for client,CE,interface in getInterfacesClient(routeur,AS,data):
-            config_vrf(routeur,CE,data,client)
-            config_vrf_interface(interface,client)
+            commandes+=config_vrf(routeur,CE,data,client)
+            commandes+=config_vrf_interface(interface,client)
+    return commandes
 
-         
 
 def test():
     with open("fichier_intention.json") as fichier:

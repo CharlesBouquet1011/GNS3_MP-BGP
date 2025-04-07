@@ -36,7 +36,7 @@ def reinitialiser_routeur(routeur):
     telnet.reinitialise_router_telnet("127.0.0.1",port)
     
 
-def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
+def config_routeur(routeur,graphe,config_noeuds,numas,process,policy=True):
     """
     
     configure un seul routeur (génère les commands puis crée un process qui écrie sur le routeur et sauvegarde la config dans un fichier)
@@ -54,7 +54,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     router_id=config_noeuds[routeur]["router_id"]#récupérer le routeur_id ici
     #le graphe est le dico obtenu à partir du json
     commande=ad.genere_commandes_ip(config_noeuds,routeur)
-    commande+=lb.generer_loopback_commandes(routeur,config_noeuds)
+    commande+=lb.generer_loopback_commandes(routeur,config_noeuds[routeur]["loopback"])
     #mettre bgp après ospf/rip (il faut avoir configuré le routage ipv6#)
     if protocole.lower()=="ospf":
         commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
@@ -63,7 +63,7 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
         raise
     commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds,policy)
     commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas,policy)
-
+    commande+=mp.config_vrf_et_MP_BGP_routeur(routeur,numas,graphe,config_noeuds)
     
     port=config_noeuds[routeur]["json_gns3"].console
 
@@ -87,15 +87,12 @@ if __name__=="__main__":
     import adressage_loopback as lb
     import adressage_loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
-    policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
-    if policy:
-        with open("gns/reseau_officiel_policies.json") as fichier:
-            graphe=json.load(fichier)
-    else:
-        with open("gns/reseau_officiel.json") as fichier:
-            graphe=json.load(fichier)
+    import MP_BGP as mp
+    with open("S2/GNS3_MP-BGP/fichier_intention.json") as fichier:
+        graphe=json.load(fichier)
+    
 
-    GNS3_SERVER = "http://127.0.0.1:3080"
+    GNS3_SERVER = "http://127.0.0.1:6630"
     PROJECT_NAME = input("quel est le nom de votre projet ? (sensible à la casse)")
     
     # Connexion au serveur GNS3
@@ -109,7 +106,7 @@ if __name__=="__main__":
     config_noeuds = ad.genere_config_noeud(graphe)
     id.config_router_id(graphe,config_noeuds)
 
-    lb.configure_loopback_addresses(config_noeuds)
+    lb.configure_loopback_addresses(graphe,config_noeuds)
     telnet.recupérer_jsongns3_routeur(config_noeuds,project)
     with open("config_noeuds.json","w") as outfile:
         json.dump(config_noeuds,outfile,default=handle_non_serializable)
@@ -123,7 +120,7 @@ if __name__=="__main__":
     
     for numas in graphe.keys():
         for routeur in graphe[numas]["routeurs"].keys():
-            config_routeur(routeur,graphe,config_noeuds,numas,process,policy) #on configure tous les routeurs
+            config_routeur(routeur,graphe,config_noeuds,numas,process) #on configure tous les routeurs
     for p in process:
         p.join()
 

@@ -35,7 +35,7 @@ def getInterfacesClient(routeur,numAs,data):
         if len(liste)==3:
             CE=liste[0]
             retour.append([getNomClient(routeur,numAs,data,interface),CE,interface])
-            
+    return retour 
 
 
 def getIpVoisin(routeur,voisin,config):
@@ -67,7 +67,7 @@ def configMp_BGP_routeur(routeur,AS,data,config):
     for client,CE,interface in getInterfacesClient(routeur,AS,data):
         commandes.append(f"address-family ipv4 vrf {client}")
         ipvoisin=getIpVoisin(routeur,CE,config)
-        asVoisin=get_as_for_router()
+        asVoisin=get_as_for_router(CE,data)
         commandes.append(f"neighbor {ipvoisin} remote-as {asVoisin}")
         commandes.append(f"neighbor {ipvoisin} activate")
         commandes.append('exit-adress-family')
@@ -85,7 +85,7 @@ def trouve_PE_AS(numAs,data):
     for routeur in data[numAs]["routeurs"]:
         if routeur_est_PE(routeur,numAs,data):
             liste.append(routeur)
-    
+    return liste
 
 def config_vrf_et_MP_BGP_routeur(routeur,AS,data,config):
     from vrf import config_vrf_routeur
