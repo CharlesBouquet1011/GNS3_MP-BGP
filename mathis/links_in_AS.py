@@ -31,8 +31,8 @@ def links_in_AS(AS):
     return links
 
 # Traitement de chaque AS
-for AS_number, AS_data in intent.items():
-    print("AS", AS_number, links_in_AS(AS_data))
+#for AS_number, AS_data in intent.items():
+    #print("AS", AS_number, links_in_AS(AS_data))
 
 # Résultat fonction
 # AS 1 [['R1', 'GigabitEthernet1/0', 'R2', 'FastEthernet0/0', 10], ['R1', 'GigabitEthernet2/0', 'R3', 'GigabitEthernet1/0', 0], ['R2', 'GigabitEthernet1/0', 'R3', 'GigabitEthernet2/0', 0]]
