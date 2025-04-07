@@ -1,6 +1,6 @@
 import json
 
-with open('intent_lite.json', 'r') as JSON:
+with open('./mathis/intent_lite.json', 'r') as JSON:
     intent = json.load(JSON)
 
 def links_in_AS(AS):
@@ -30,10 +30,10 @@ def links_in_AS(AS):
                         processed.add(key)
     return links
 
-# Traitement de chaque AS (ici, l'exemple n'en contient qu'un)
+# Traitement de chaque AS
 for AS_number, AS_data in intent.items():
     print("AS", AS_number, links_in_AS(AS_data))
 
-
 # Résultat fonction
-# [["R1", "GigabitEthernet1/0", "R2", "GigabitEthernet2/0",0],["R1", "GigabitEthernet2/0", "R3", "GigabitEthernet1/0",0],["R2", "GigabitEthernet1/0", "R3", "GigabitEthernet2/0",0]]
+# AS 1 [['R1', 'GigabitEthernet1/0', 'R2', 'FastEthernet0/0', 10], ['R1', 'GigabitEthernet2/0', 'R3', 'GigabitEthernet1/0', 0], ['R2', 'GigabitEthernet1/0', 'R3', 'GigabitEthernet2/0', 0]]
+# AS 2 [['R4', 'FastEthernet0/0', 'R5', 'GigabitEthernet1/0', 0], ['R4', 'GigabitEthernet2/0', 'R6', 'GigabitEthernet2/0', 0], ['R5', 'GigabitEthernet2/0', 'R6', 'GigabitEthernet1/0', 0]]
