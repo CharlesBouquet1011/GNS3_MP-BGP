@@ -1,6 +1,20 @@
+from mathis import links_in_AS
+
 import json
 with open('fichier_intention.json', 'r') as file:
     intent_data = json.load(file)
+
+def genere_config_noeud(intent_file):
+    config_noeuds={}
+    for ass in intent_file.keys():
+        for routeur in intent_file[ass]["routeurs"]:
+            config_noeuds[routeur]={}
+            config_noeuds[routeur]["ip_et_co"]={}
+            config_noeuds[routeur]["protocole"]="OSPF"
+            for interface,connexion in intent_file[ass]["routeurs"][routeur].items():
+                connexion=connexion[0] #on n'a pas besoin d'utiliser le coût
+                config_noeuds[routeur]["ip_et_co"][connexion]=[]
+    return config_noeuds
 
 def create_subnets(intent_file, as_nb):
     try:
@@ -44,27 +58,13 @@ def genere_commandes_ip(config_noeuds,noeud):
     commande.append("end")
     return commande
 
-ip = "10.0.0.0/16"
-links = [["R1", "GigabitEthernet1/0", "R2", "GigabitEthernet2/0",0],["R1", "GigabitEthernet2/0", "R3", "GigabitEthernet1/0",0],["R2", "GigabitEthernet1/0", "R3", "GigabitEthernet2/0",0]]
-config_noeuds = {
-    "R1": {
-        "ip_et_co": {
-            "R2": [],
-            "R3": []
-        },
-    },
-    "R2": {
-        "ip_et_co": {
-        "R1": [],
-        "R3": []
-        },
-    },
-    "R3": {
-        "ip_et_co": {
-        "R1": [],
-        "R2": []
-        },
-    }
-}
-subnet = create_subnets(intent_data, 1)
-print(genere_commandes_ip(mapping(links, subnet, config_noeuds), "R1"))
+if __name__=="__main__":
+    links = links_in_AS.links_in_AS(intent_data["1"]) #Pour l'AS 1
+    print("Links:", links)
+    
+    config_noeuds = genere_config_noeud(intent_data)
+    subnet = create_subnets(intent_data, "1")
+
+
+    m = mapping(links, subnet, config_noeuds)
+    print("Mapping:", m)
