@@ -6,8 +6,6 @@ import write_config as wc
 import multiprocessing
 import telnet #on veut importer ces 3 fichiers/librairies dans chaque process (chaque process a besoin d'écrire avec telnet et sur un fichier)
 
-config_noeuds={}
-
 def write_telnet_and_save(port,commande,routeur):
     """
     fonction qui permet à chaque process d'écrire sur un routeur avec telnet, de récupérer la config et de l'écrire dans un fichier cfg
@@ -58,8 +56,11 @@ def config_routeur(routeur,graphe,config_noeuds,numas,process,policy):
     commande=ad.genere_commandes_ip(config_noeuds,routeur)
     commande+=lb.generer_loopback_commandes(routeur,config_noeuds)
     #mettre bgp après ospf/rip (il faut avoir configuré le routage ipv6#)
-    commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
-    
+    if protocole.lower()=="ospf":
+        commande+=ospf.config_ospf(router_id,routeur,5,graphe,numas,1) 
+    else:
+        print("protocole non reconnu")
+        raise
     commande+=bgp.config_bgp_routeur(routeur,graphe,router_id,config_noeuds,policy)
     commande+=bgp.config_iBGP(routeur,graphe,router_id,config_noeuds,numas,policy)
 
@@ -78,10 +79,12 @@ if __name__=="__main__":
     from gns3fy import Gns3Connector, Project
 
     import adressage as ad
+    import adressage as ad
     import BGP as bgp
     import router_id as id
     import ospf
     import telnet
+    import adressage_loopback as lb
     import adressage_loopback as lb
     import json #on ne veut pas tout importer dans chaque process (ça prend beaucoup de temps)
     policy=input("voulez vous voir le comportement des policies ? (oui/non)").lower()=="oui"
@@ -103,7 +106,7 @@ if __name__=="__main__":
     project.get()
     #question=input("voulez-vous réinitialiser les configurations avant d'appliquer les nouvelles ? (oui/non)")
     process=[]
-    config_noeuds=ad.attribue_ip(graphe,config_noeuds)
+    config_noeuds = ad.genere_config_noeud(graphe)
     id.config_router_id(graphe,config_noeuds)
 
     lb.configure_loopback_addresses(config_noeuds)
