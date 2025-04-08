@@ -31,7 +31,7 @@ def generer_loopback_commandes(routeur:str, adresse_loopback:str):
                      "conf t",
 					f"interface loopback0",
 					
-					f" ip address {adresse_loopback} 255.255.128.0",
+					f" ip address {adresse_loopback} 255.255.255.255",
 					f"no shutdown",
 					"exit","end"])
 	

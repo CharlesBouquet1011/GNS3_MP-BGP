@@ -58,3 +58,12 @@ def genere_commandes_ip(config_noeuds,noeud):
 
     commande.append("end")
     return commande
+
+def genere_ip_interface(config_noeuds,routeur,interfaceAConfig):
+    commandes=[]
+    for interface,ip in config_noeuds[routeur]["ip_et_co"].values():
+        if interface==interfaceAConfig:
+            
+            commandes.append(f"ip address {ip} 255.255.255.252")
+    return commandes
+            

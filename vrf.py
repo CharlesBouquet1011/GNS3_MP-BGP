@@ -21,26 +21,28 @@ def config_vrf(router_id,voisin_id,data,nom_client): #router id est le nom du ro
     commands.append("end")
     return(commands)
 
-def config_vrf_interface(interface,nom_client):
+def config_vrf_interface(interface,nom_client,config,routeur):
     '''
     interface FastEthernet0/0
     vrf forwarding Client_1
     '''
+    from adressage import genere_ip_interface
     commands = ["conf t"]
     commands.append(f"interface {interface}")
     commands.append(f"vrf forwarding {nom_client}")
+    commands+=genere_ip_interface(config,routeur,interface)
     commands.append("end")
     return(commands)
 
 
-def config_vrf_routeur(routeur,AS,data):
+def config_vrf_routeur(routeur,AS,data,config):
     commandes=[]
     if routeur_est_PE(routeur,AS,data):
     
 
         for client,CE,interface in getInterfacesClient(routeur,AS,data):
             commandes+=config_vrf(routeur,CE,data,client)
-            commandes+=config_vrf_interface(interface,client)
+            commandes+=config_vrf_interface(interface,client,config,routeur)
     return commandes
 
 
