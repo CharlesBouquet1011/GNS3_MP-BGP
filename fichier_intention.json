@@ -168,6 +168,7 @@
         "protocole":"OSPF",
 		"annonce_reseaux":["R19"],
 		"plage_IP":"6.0.0.0/16",
+		"CE": "R18",
 
         "routeurs":{
             "R18":{
@@ -188,6 +189,7 @@
         "protocole":"OSPF",
 		"annonce_reseaux":["R25"],
 		"plage_IP":"7.0.0.0/16",
+		"CE": "R24",
 
         "routeurs":{
             "R24":{
