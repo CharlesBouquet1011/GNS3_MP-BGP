@@ -1,4 +1,6 @@
-import json
+"""
+génère les adresses loopback
+"""
 
 def add_loop(id_routeur:int,AS:str):
     return f"{AS}.0.128.{id_routeur}"
@@ -40,6 +42,9 @@ def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 
 
 def configure_loopback_addresses(data,config_noeud):
+    """
+    mets les adresses loopback dans le dictionnaire de config
+    """
     routeur_to_as = map_routeurs_to_as(data)
     
     for routeur in config_noeud:
@@ -52,6 +57,8 @@ def configure_loopback_addresses(data,config_noeud):
 
     
 if __name__ == "__main__":
+    import json
+
     config_noeuds = {
     "R1": {
         "ip_et_co": {

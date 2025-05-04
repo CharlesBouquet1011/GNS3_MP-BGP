@@ -46,6 +46,13 @@ def getIpVoisin(routeur,voisin,config):
     return config[voisin]["ip_et_co"][routeur][1]
 
 def configMp_BGP_routeur(routeur,AS,data,config):
+    """
+    configure MP BGP pour un routeur
+    routeur: le routeur à configurer
+    AS: le numéro d'AS de ce routeur
+    data: le fichier d'intention
+    config: la configuration de tous les routeurs
+    """
     from BGP import get_as_for_router
 
 
@@ -79,9 +86,17 @@ def configMp_BGP_routeur(routeur,AS,data,config):
 
 
 def getIpLoopback(routeur,config):
+    """
+    renvoie l'IP de loopback du routeur
+    """
     return config[routeur]["loopback"]
 
 def trouve_PE_AS(numAs,data):
+    """
+    trouve les routeurs PE d'un AS
+    numAS: numéro de l'AS
+    data: fichier d'intention
+    """
     liste=[]
     for routeur in data[numAs]["routeurs"]:
         if routeur_est_PE(routeur,numAs,data):
@@ -89,6 +104,10 @@ def trouve_PE_AS(numAs,data):
     return liste
 
 def config_vrf_et_MP_BGP_routeur(routeur,AS,data,config):
+    """
+    configure à la fois les vrf et MPBGP pour un routeur donné
+    """
+
     from vrf import config_vrf_routeur
     commandes=[]
     commandes+=config_vrf_routeur(routeur,AS,data,config)

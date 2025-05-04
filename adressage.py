@@ -1,3 +1,7 @@
+"""
+génère les adresses IPv4
+"""
+
 from mathis import links_in_AS, links_out_AS
 
 def genere_config_noeud(intent_file):
@@ -60,6 +64,9 @@ def genere_commandes_ip(config_noeuds,noeud):
     return commande
 
 def genere_ip_interface(config_noeuds,routeur,interfaceAConfig):
+    """
+    génère les commandes pour configurer l'IP d'une seule interface
+    """
     commandes=[]
     for interface,ip in config_noeuds[routeur]["ip_et_co"].values():
         if interface==interfaceAConfig:
