@@ -1,6 +1,7 @@
 from mathis import links_in_AS, links_out_AS
 
 def genere_config_noeud(intent_file):
+    """Génère le dictionnaire config_noeuds à partir du fichier d'intention"""
     config_noeuds={}
     in_links = []
     for ass in intent_file.keys():
@@ -18,6 +19,7 @@ def genere_config_noeud(intent_file):
     return config_noeuds
 
 def create_subnets_and_map_in(intent_file, links, config_noeuds):
+    """Associe une adresse IPv4 différente à chaque interface relié à un routeur de la même AS de chaque routeur et les ajoute dans le dictionnaire config_noeuds"""
     try:
         for as_nb in intent_file.keys():
             network_address = intent_file[as_nb]["plage_IP"]
@@ -40,6 +42,7 @@ def create_subnets_and_map_in(intent_file, links, config_noeuds):
         return "Invalid format"
 
 def create_subnets_and_map_out(out_links, config_noeuds):
+    """Associe une adresse IPv4 différente à chaque interface vers l'extérieur de chaque routeur de bordure et les ajoute dans le dictionnaire config_noeuds"""
     try:
         for link in out_links:
             config_noeuds[link[1]]["ip_et_co"][link[4]]=[link[2], f"{link[0]}.{link[3]}.0.1"]
@@ -60,6 +63,7 @@ def genere_commandes_ip(config_noeuds,noeud):
     return commande
 
 def genere_ip_interface(config_noeuds,routeur,interfaceAConfig):
+    """Génère la commande pour configurer l'adresse IP d'une interface particulière"""
     commandes=[]
     for interface,ip in config_noeuds[routeur]["ip_et_co"].values():
         if interface==interfaceAConfig:
