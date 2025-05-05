@@ -1,3 +1,7 @@
+"""
+génère les adresses IPv4
+"""
+
 from mathis import links_in_AS, links_out_AS
 
 def genere_config_noeud(intent_file):
