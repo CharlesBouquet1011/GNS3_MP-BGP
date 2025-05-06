@@ -1,21 +1,26 @@
 """
-génère les adresses loopback
+Génère les adresses loopback
 """
 
 def add_loop(id_routeur:int,AS:str):
-    return f"{AS}.0.128.{id_routeur}"
-# def adressage_loopback(data:dict,AS:str):
-#     dic_loop = {}
-#     liste_routeur = list(data[AS]["routeurs"].keys())
-    
-#     for r in liste_routeur:
-        
-#         id_routeur = r[1:]
-#         add_loop = f"{AS}.0.128.{id_routeur}" 
-#         dic_loop[r] = add_loop
-#     return dic_loop
+    """
+    Fonction générant des adresses loopbacks à partir de l'AS du routeur et de son id
 
-def map_routeurs_to_as(data):
+    Input: id_routeur = integer
+    AS = string 
+
+    Output: f-string
+    """
+    return f"{AS}.0.128.{id_routeur}"
+
+def map_routeurs_to_as(data:dict):
+    """
+    Fonction associant à partir de la topologie du réseau de retrouver l'AS du routeur
+
+    Input: data = dictionnaire
+
+    Output: routeur_to_as = dictionnaire
+    """
     routeur_to_as = {}
     for AS in data:
         for routeur in data[AS]["routeurs"]:
@@ -25,8 +30,12 @@ def map_routeurs_to_as(data):
 
 def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 	"""
-	génère les commandes loopback à appliquer au routeur donné en entrée à l'aide du dictionnaire de config
-	"""
+	Fonction génèrant les commandes des adresses de loopback à appliquer au routeur donné en entrée à l'aide du dictionnaire de configuration
+	Input : routeur = string
+    adresse_loopback = string
+
+    Output : commandes = liste de f-string
+    """
 	commandes = []
 	
 	commandes.extend([
@@ -41,9 +50,12 @@ def generer_loopback_commandes(routeur:str, adresse_loopback:str):
 	return commandes
 
 
-def configure_loopback_addresses(data,config_noeud):
+def configure_loopback_addresses(data:dict,config_noeud:dict):
     """
-    mets les adresses loopback dans le dictionnaire de config
+    mets les adresses loopback dans le dictionnaire de configuration
+
+    Input: data = dictionnaire
+    configh_noeud = dictionnaire
     """
     routeur_to_as = map_routeurs_to_as(data)
     
@@ -56,35 +68,35 @@ def configure_loopback_addresses(data,config_noeud):
 
 
     
-if __name__ == "__main__":
-    import json
+# if __name__ == "__main__":
+#     import json
 
-    config_noeuds = {
-    "R1": {
-        "ip_et_co": {
-            "R2": [],
-            "R3": []
-        },
+#     config_noeuds = {
+#     "R1": {
+#         "ip_et_co": {
+#             "R2": [],
+#             "R3": []
+#         },
 
-    },
-    "R2": {
-        "ip_et_co": {
-        "R1": [],
-        "R3": []
-        },
-    },
-    "R3": {
-        "ip_et_co": {
-        "R1": [],
-        "R2": []
-        },
-    }
-}
-    with open('fichier_intention.json','r') as file:
-        data  = json.load(file)
-    print(config_noeuds)
+#     },
+#     "R2": {
+#         "ip_et_co": {
+#         "R1": [],
+#         "R3": []
+#         },
+#     },
+#     "R3": {
+#         "ip_et_co": {
+#         "R1": [],
+#         "R2": []
+#         },
+#     }
+# }
+#     with open('fichier_intention.json','r') as file:
+#         data  = json.load(file)
+#     print(config_noeuds)
     
-    configure_loopback_addresses(data,config_noeuds)
-    print(config_noeuds)
+#     configure_loopback_addresses(data,config_noeuds)
+#     print(config_noeuds)
     
         
