@@ -166,8 +166,9 @@
     },
     "6":{
         "protocole":"OSPF",
-		"annonce_reseaux":[],
+		"annonce_reseaux":["R19"],
 		"plage_IP":"6.0.0.0/16",
+		"CE": ["R18"],
 
         "routeurs":{
             "R18":{
@@ -179,15 +180,16 @@
             }
         },
         "relation":{
-            "provider":["1"],
+            "provider":[],
             "peer":["7"],
-            "customer":[]
+            "customer":["1"]
         }   
     },
     "7":{
         "protocole":"OSPF",
-		"annonce_reseaux":[],
+		"annonce_reseaux":["R25"],
 		"plage_IP":"7.0.0.0/16",
+		"CE":  ["R24"],
 
         "routeurs":{
             "R24":{
@@ -199,9 +201,9 @@
             }
         },
         "relation":{
-            "provider":["1"],
+            "provider":[],
             "peer":["6"],
-            "customer":[]
+            "customer":["1"]
         }   
     }
 }

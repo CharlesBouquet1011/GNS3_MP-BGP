@@ -1,7 +1,5 @@
 import json
 
-with open('./mathis/intent_lite.json', 'r') as JSON:
-    intent = json.load(JSON)
 
 def links_in_AS(AS):
     routers = AS["routeurs"]
@@ -30,9 +28,13 @@ def links_in_AS(AS):
                         processed.add(key)
     return links
 
+
+if __name__=="__main__":
+    with open('fichier_intention.json', 'r') as file:
+        intent_data = json.load(file)
 # Traitement de chaque AS
-for AS_number, AS_data in intent.items():
-    print("AS", AS_number, links_in_AS(AS_data))
+#for AS_number, AS_data in intent.items():
+    #print("AS", AS_number, links_in_AS(AS_data))
 
 # Résultat de la fonction links_in_AS(AS) avec intent_lite.json
 # AS 1 [['R1', 'GigabitEthernet1/0', 'R2', 'FastEthernet0/0', 10], ['R1', 'GigabitEthernet2/0', 'R3', 'GigabitEthernet1/0', 0], ['R2', 'GigabitEthernet1/0', 'R3', 'GigabitEthernet2/0', 0]]

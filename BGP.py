@@ -1,7 +1,10 @@
-import json
-import ipaddress
+"""
+génère la configuration BGP
+"""
+#j'importe les modules dans les fonctions pour ne pas réimporter tous les modules lorsque j'importe celui là
 #à modifier
 def get_reseaux_routeur(routeur,config_noeuds):
+	import ipaddress
 	"""
 	renvoie les adresses réseaux des réseaux auxquels est connecté un routeur
 	"""
@@ -40,7 +43,7 @@ def annonce_reseaux_routeur(routeur_sur_lequel_on_applique,commandes,config_noeu
 	
 	reseaux=get_reseaux_routeur(routeur_sur_lequel_on_applique,config_noeuds)
 	for reseau in reseaux:
-		commandes.append(f"network {reseau}")
+		commandes.append(f"network {reseau} mask 255.255.255.252")
 
 		
 
@@ -61,7 +64,7 @@ def config_bgp(routeur,voisin,reseau_officiel,router_id,address_ipv4,address_voi
 	voisin_as = get_as_for_router(voisin, reseau_officiel)
 
 	memeAs=sameAS(routeur,voisin,reseau_officiel)
-	if  memeAs and "db8" in address_voisin: #iBGP, on ne veut garder que les adresses loopback
+	if  memeAs: #iBGP, on ne veut garder que les adresses loopback
 		commandes.append(f"neighbor {address_voisin} remote-as {AS}") #en fait c'est l'adresse ipv4 du voisin!!
 		commandes.append(f"address-family ipv4 unicast")
 		commandes.append(f"neighbor {address_voisin} activate")
@@ -136,9 +139,12 @@ def config_bgp_routeur(routeur, reseau_officiel,routeur_iden,config_noeud,policy
 	routeur_iden: id du routeur (pk en ?)
 	condig_noeud: le dictionnaire qui contient les infos de config, ip entre autres
 	"""
+	AS = get_as_for_router(routeur,reseau_officiel)
 	dico_voisins = config_noeud[routeur]["ip_et_co"]
 	
 	commandes = ["conf t"]
+	if "CE" in reseau_officiel[str(AS)] and routeur in reseau_officiel[str(AS)]["CE"]: #Ce routeur est CE
+		commandes += [f"router bgp {AS}", "address-family ipv4 unicast", "redistribute connected", "exit", "exit"] #Ajout redistribute connected pour rendre le sous reseau accessible
 	for voisin,liste in dico_voisins.items():
 		ip_voisin=config_noeud[voisin]["ip_et_co"][routeur][1] #on récupère l'ip du voisin connecté à notre routeur
 		commandes.extend(config_bgp(routeur,voisin,reseau_officiel,routeur_iden, liste[1],ip_voisin,policy,config_noeud))
@@ -170,7 +176,7 @@ def policies(routeur, voisin, data, address_ipv4_neighbor):
 	""" 
 	as_number = get_as_for_router(routeur, data)
 	as_voisin = get_as_for_router(voisin, data)
-	commandes = [f"router bgp {as_number}", "address-family ipv4 unicast"]
+	commandes = ["ip bgp-community new-format", f"router bgp {as_number}", "address-family ipv4 unicast"]
 	if as_number != as_voisin:
 		relation = get_relation(as_number, as_voisin, data)
 		if relation == 'provider':
@@ -220,6 +226,8 @@ def config_iBGP(routeur,reseau_officiel,router_id,config_noeud,numas,policy):
 	return commandes
 
 def test():
+	import json
+
 	with open("GNS3/reseau_officiel.json") as fichier:
 		data=json.load(fichier)
 	#print("Numéros d'AS pour chaque routeur :")
